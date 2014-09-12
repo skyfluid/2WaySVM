@@ -112,7 +112,7 @@ fclose(outfile);
 
 set(0, 'DefaultFigureVisible', 'on')
 
-load('stat_total.mat');
+load(['stat_total_balance_'  int2str(def_bin_size)  'ms.mat']);
 
 for iWord=1:length(wordtoVerify)
     avgHR = [];
