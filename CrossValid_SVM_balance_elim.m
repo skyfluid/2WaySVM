@@ -94,6 +94,12 @@ for iWord=1:length(wordtoVerify)
         stat_total{iWord}.data(nPC).HR(iTestSet) = hitRate;
         stat_total{iWord}.data(nPC).pHR(iTestSet) = posHitRate;
         stat_total{iWord}.data(nPC).nHR(iTestSet) = negHitRate;
+        
+        % dp calculation
+        HR = min([norminv(0.99) norminv(posHitRate)]);
+        FL = max([norminv(0.01) norminv(1 - negHitRate)]);
+        stat_total{iWord}.data(nPC).dp(iTestSet) = HR - FL; 
+        
         stat_total{iWord}.data(nPC).varcov(iTestSet) = SVM_candidate{iTestSet}.varcov;
         stat_total{iWord}.data(nPC).pc{iTestSet} = SVM_candidate{iTestSet}.pc;
         stat_total{iWord}.data(nPC).svm{iTestSet} = SVM_candidate{iTestSet}.svm;
@@ -112,7 +118,7 @@ fclose(outfile);
 
 set(0, 'DefaultFigureVisible', 'on')
 
-load(['stat_total_balance_'  int2str(def_bin_size)  'ms.mat']);
+%load(['stat_total_balance_'  int2str(def_bin_size)  'ms.mat']);
 
 for iWord=1:length(wordtoVerify)
     avgHR = [];
