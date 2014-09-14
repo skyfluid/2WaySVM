@@ -5,10 +5,11 @@ close all
 %cell_sel = [1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 23, 24, 30, 33, 39, 40, 41, 42, 44, 45, 46, 47, 49, 50, 51, 53, 57, 60, 65, 66, 67, 68, 69, 70, 73, 74, 75, 76, 77, 78, 80, 82, 83, 84, 86, 87, 88, 89, 93, 94, 95, 97, 102, 103, 104, 105, 111, 112, 113, 114, 118, 120, 121, 129, 130, 131, 132, 134, 135, 136, 138, 141, 144, 145, 151, 154, 155, 157, 158, 159, 166, 167, 168, 169, 170, 171, 174, 181, 189, 193];
 %cell_sel = [5, 6, 7, 8, 9, 23, 42, 43, 55, 57, 60, 61, 62, 66, 67, 71];
 cell_sel = [1:199];
+bin_sel = [1:19];
 
 def_bin_size = 50;
 def_cell_count = length(cell_sel);
-def_max_pc_count = 400;
+def_max_pc_count = 50;
 def_plot_pc_count = 50;
 def_balance_coef = 1;
 
@@ -21,7 +22,7 @@ trialSet = [];
 wordSet = [];
 
 for iTrial=1:length(binMat)
-    A = binMat{iTrial}.mat(cell_sel,:)';
+    A = binMat{iTrial}.mat(cell_sel, bin_sel)';
     B = binMat{iTrial}.type;
     trialSet = [trialSet; A(:)'];
     wordSet = [wordSet; B];
@@ -131,7 +132,7 @@ for iWord=1:length(wordtoVerify)
     avgpHR = [];
     avgnHR = [];
     avgvarcov = [];
-    dp = [];
+    avgDP = [];
     
     for nPC=1:def_plot_pc_count
 
@@ -139,15 +140,7 @@ for iWord=1:length(wordtoVerify)
         avgpHR = [avgpHR stat_total{iWord}.data(nPC).pHR'];
         avgnHR = [avgnHR stat_total{iWord}.data(nPC).nHR'];
         avgvarcov = [avgvarcov stat_total{iWord}.data(nPC).varcov'];
-        
-        dpp=[];
-        for iTest=1:10            
-            HR = min([norminv(0.99) norminv(stat_total{iWord}.data(nPC).pHR(iTest))]);
-            FL = max([norminv(0.01) norminv(1 - stat_total{iWord}.data(nPC).nHR(iTest))]);
-            dpp(iTest) = HR - FL;
-        end
-        dp = [dp dpp'];  % some elements may not contain trial
-
+        avgDP = [avgDP stat_total{iWord}.data(nPC).DP'];  % some elements may not contain trial
 
     end
 
@@ -177,7 +170,7 @@ for iWord=1:length(wordtoVerify)
     saveas(gcf, ['./PCA_SVM_balance/Varcov_balance_' wordtoVerify{iWord} '_box.jpg'], 'jpg');    
 
     figure;
-    boxplot(dp);
+    boxplot(avgDP);
     title(['d-prime for word ' wordtoVerify{iWord} ' (' int2str(def_cell_count) 'u ' int2str(def_plot_pc_count) 'pc) (balance)']);
     xlabel('Number of PCs'); ylabel('Variance Coverage');
     saveas(gcf, ['./PCA_SVM_balance/DP_balance_' wordtoVerify{iWord} '_box.jpg'], 'jpg');
